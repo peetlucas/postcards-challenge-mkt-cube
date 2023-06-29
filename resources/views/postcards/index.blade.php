@@ -60,9 +60,6 @@
         <nav aria-label="Pagination">
           {{ $postcards->links() }}
         </nav>
-
   </div>
-
   </div>
-
 </x-layout>
