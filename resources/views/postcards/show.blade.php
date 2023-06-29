@@ -63,7 +63,7 @@
       </div>
     </x-card>    
   </div>
-
   {{-- Output the schema as a JSON-LD script --}}
-  {!! $schema !!}  		
-</x-layout>
+  {!! $schema !!} 
+  
+  </x-layout>
