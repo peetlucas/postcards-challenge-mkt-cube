@@ -22,6 +22,7 @@ Route::controller(App\Http\Controllers\PostcardController::class)->group(functio
 
     // Single Postcard   
     Route::get('/postcards/{postcard}', 'show')->name('postcards.show');
+    Route::get('/sitemap.xml', 'PostcardController@index');
 });
 
 Route::middleware([
