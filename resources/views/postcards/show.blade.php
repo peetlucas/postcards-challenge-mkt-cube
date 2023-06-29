@@ -1,20 +1,7 @@
-<x-guest-layout> 
-	<div class="min-h-full">
-	    <!-- Navbar -->
-	    <nav class="bg-gray-50">
-	      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-	        <div class="relative flex h-16 items-center justify-between border-b border-gray-200">
-	          <div class="flex items-center">
-	            <div class="flex-shrink-0">
-	              <img class="h-8 w-auto" src="https://www.ringier.com/wp-content/themes/ringiercorporate/assets/images/ringier-logo.svg" alt="Ringier Logo">
-	            </div>
-
-	          </div>
-
-	        </div>
-	      </div>
-	    </nav>
-
+<x-layout> 
+	<div class="mx-4">
+	 <a href="/" class="inline-block text-black ml-4 mb-4"><i class="fa-solid fa-arrow-left"></i> Back
+  	</a>
 	    <!-- Page heading -->
 	    <header class="bg-gray-50 py-8">
 	      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 xl:flex xl:items-center xl:justify-between">
@@ -36,25 +23,47 @@
 	              </li>
 	            </ol>
 	          </nav>
-	          <h1 class="mt-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Postcard details</h1>
+	          <h1 class="mt-2 text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-2xl sm:tracking-tight">Postcard Details</h1>
 	        </div>
 
 	      </div>
 	    </header>
+		<x-card class="p-10">
+		<div class="flex">
+			<img class="hidden w-48 mr-6 md:block rounded-l-lg"
+			src="{{$postcard->photo ? asset('storage/' . $postcard->photo) : 'https://picsum.photos/400/200?random=' . $postcard->id }}" alt="" />
+			<div>
+				<h1 class="text-2xl font-bold text-gray-900">{{ $postcard->title }}</h1>
+				<p class="text-sm font-medium text-gray-500">Available on <time datetime="{{ $postcard->online_at }}">{{ $postcard->online_at }}</time> to <time datetime="{{ $postcard->offline_at }}">{{ $postcard->offline_at }}</time></p>			
+				<p>Author: {{ $postcard->user->name }}</p>				
+				<div class="font-bold mb-4"><p>Price: R{{ $postcard->price }} </p></div> 
+			</div>
+		</div>
+	</x-card>
+</div>
+<div class="mx-4">
+    <x-card class="p-10">
+      <div class="flex flex-col items-center justify-center text-center">     
+        
+        <div>
+          <h3 class="text-3xl font-bold mb-4">Postcard Description</h3>
+          <div class="text-lg space-y-6">
+           
 
-    	<main class="pt-8 pb-16">
-	      	<div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-			    <div class="mx-auto max-w-3xl">
-			      <div class="flex items-center">
-			        <div>
-			          <h1 class="text-2xl font-bold text-gray-900">{{ $postcard->title }}</h1>
-			          <p class="text-sm font-medium text-gray-500">Available on <time datetime="{{ $postcard->online_at }}">{{ $postcard->online_at }}</time> to <time datetime="{{ $postcard->offline_at }}">{{ $postcard->offline_at }}</time></p>
-			          <p>Author: {{ $postcard->user->name }}</p>
-			          <p>Price: R{{ $postcard->price }} </p>
-			        </div>
-			      </div>
-			    </div>
-		    </div>
-		</main>
-	</div>
-</x-guest-layout>
+            <a href="mailto:info@ringier.ch"
+              class="block bg-laravel text-white mt-6 py-2 rounded-xl hover:opacity-80"><i
+                class="fa-solid fa-envelope"></i>
+              Contact Agent</a>
+
+            <a href="https://www.ringier.com" target="_blank"
+              class="block bg-black text-white py-2 rounded-xl hover:opacity-80"><i class="fa-solid fa-globe"></i>
+              Visit Website</a>
+          </div>
+        </div>
+      </div>
+    </x-card>    
+  </div>
+
+  {{-- Output the schema as a JSON-LD script --}}
+  {!! $schema !!}  		
+</x-layout>
