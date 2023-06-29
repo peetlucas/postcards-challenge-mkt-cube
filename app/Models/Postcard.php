@@ -20,6 +20,13 @@ class Postcard extends Model
         'team_id'
     ];
 
+    public function scopeFilter($query, array $filters) {
+        
+        if($filters['search'] ?? false) {
+            $query->where('title', 'like', '%' . request('search') . '%');
+        }
+    }
+
     //Generate Schema-org structured data
     public function getSchema()
     {

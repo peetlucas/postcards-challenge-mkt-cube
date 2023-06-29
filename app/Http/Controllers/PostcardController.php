@@ -6,6 +6,14 @@ use App\Http\Requests\StorePostcardRequest;
 use App\Http\Requests\UpdatePostcardRequest;
 use App\Models\Postcard;
 
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\abort;
+use Illuminate\Support\Facades\Redirect;
+
+use Carbon\Carbon;
+
 class PostcardController extends Controller
 {
     /**
@@ -13,9 +21,10 @@ class PostcardController extends Controller
      */
     public function index()
     {
+       $isDraft = 0;
         return view('postcards.index', [
-            'postcards' => Postcard::paginate(20)
-        ]);
+                'postcards' => Postcard::where('is_draft', '=', $isDraft)->paginate(5)                    
+            ]);        
     }
 
     /**
