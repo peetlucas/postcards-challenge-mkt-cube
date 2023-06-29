@@ -48,7 +48,11 @@ class PostcardController extends Controller
      */
     public function show(Postcard $postcard)
     {
-        return view('postcards.show', compact('postcard'));
+        //Get postcard schema
+        $product = Postcard::findOrFail($postcard->id);
+        $schema = $product->getSchema();   
+
+        return view('postcards.show', compact('postcard', 'schema'));
     }
 
     /**
