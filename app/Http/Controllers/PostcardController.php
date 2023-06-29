@@ -12,6 +12,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\abort;
 use Illuminate\Support\Facades\Redirect;
 
+use Carbon\Carbon;
+
 class PostcardController extends Controller
 {
     /**
@@ -21,7 +23,6 @@ class PostcardController extends Controller
     {
         $isDraft = 0;
         return view('postcards.index', [
-
             'postcards' => Postcard::latest()->filter(request(['search']))
                     ->where('is_draft', '=', $isDraft)                   
                     ->paginate(5)
@@ -49,7 +50,11 @@ class PostcardController extends Controller
      */
     public function show(Postcard $postcard)
     {
-        return view('postcards.show', compact('postcard'));
+        //Get postcard schema
+        $product = Postcard::findOrFail($postcard->id);
+        $schema = $product->getSchema();   
+
+        return view('postcards.show', compact('postcard', 'schema'));
     }
 
     /**
