@@ -50,6 +50,18 @@ class PostcardController extends Controller
      */
     public function show(Postcard $postcard)
     {
+        //Confirm postcard not deleted
+        $deletedPost = Postcard::onlyTrashed()      
+                    ->where('id', '=', $postcard->id)
+                    ->get();
+        if($deletedPost == "[]"){
+            $deletedPost = "";
+        }
+        if($deletedPost != ""){
+            abort_if($deletedPost, response(Redirect::to('/')
+                ->with('message', '301, Postcard unavailable!'), 301));                     
+        }
+
         //Get postcard schema
         $product = Postcard::findOrFail($postcard->id);
         $schema = $product->getSchema();   
@@ -74,10 +86,14 @@ class PostcardController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified postcard from storage.
      */
-    public function destroy(Postcard $postcard)
-    {
-        //
+    public function destroy(Postcard $postcard) {        
+        
+        if($postcard->photo && Storage::disk('public')->exists($postcard->photo)) {
+            Storage::disk('public')->delete($postcard->photo);
+        }
+        $postcard->delete();
+        return redirect('/postcards/manage')->with('message', 'Postcard deleted successfully');
     }
 }

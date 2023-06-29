@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(App\Http\Controllers\PostcardController::class)->group(function () {
     Route::get('/', 'index')->name('postcards.index');
+    
+
+    // Delete Postcard
+    Route::delete('/postcards/{postcard}', [PostcardController::class, 'destroy'])->middleware('auth');
+
+    // Single Postcard   
     Route::get('/postcards/{postcard}', 'show')->name('postcards.show');
     Route::get('/sitemap.xml', 'PostcardController@index');
 });
