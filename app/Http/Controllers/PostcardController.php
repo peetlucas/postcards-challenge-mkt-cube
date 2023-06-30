@@ -24,13 +24,12 @@ class PostcardController extends Controller
     {
         $isDraft = 0;
         return view('postcards.index', [
-
-            'postcards' => Postcard::latest()->filter(request(['search']))
+         'postcards' => Postcard::latest()->filter(request(['search']))
                     ->where('is_draft', '=', $isDraft)
                     ->where((Carbon::parse(date('Y-m-d H:s:i', strtotime('online_at')))
                     ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0')
                     ->paginate(5)
-        ]);         
+        ]);   
     }
 
     /**
@@ -73,34 +72,33 @@ class PostcardController extends Controller
     {
         //Check that resource is online
         $online = Postcard::where((Carbon::parse(date('Y-m-d H:s:i', strtotime('online_at')))
-                    ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0');   
-
+                    ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0');        
+      
         if($online == "[]"){
             $online = "";
         }
-
-        //Confirm postcard not deleted
-        $model = Postcard::onlyTrashed()      
-                    ->where('id', '=', $postcard->id)
-                    ->get();
-        if($model == "[]"){
-            $model = "";
-        }
-
-        //Get postcard schema
-        $product = Postcard::findOrFail($postcard->id);
-        $schema = $product->getSchema();        
-        
+       
         if($online == ""){
             abort_if(!$online, response(Redirect::to('/')
                 ->with('message', '410, Resource is offline!'), 410));
         }
 
-        if($model != ""){
-            abort_if($model, response(Redirect::to('/')
+        //Confirm postcard deleted
+        $deletedPost = Postcard::onlyTrashed()      
+                    ->where('id', '=', $postcard->id)
+                    ->get();
+        if($deletedPost == "[]"){
+            $deletedPost = "";
+        }
+        if($deletedPost != ""){
+            abort_if($deletedPost, response(Redirect::to('/')
                 ->with('message', '301, Postcard unavailable!'), 301));                     
         }
 
+        //Get postcard schema
+        $product = Postcard::findOrFail($postcard->id);
+        $schema = $product->getSchema();               
+       
         return view('postcards.show', compact('postcard', 'schema'));         
     }
 
@@ -122,7 +120,9 @@ class PostcardController extends Controller
         return back()->with('message', 'Postcard updated successfully!');
     }
 
-    // Delete Postcard
+    /**
+     * Remove the specified postcard from storage.
+     */
     public function destroy(Postcard $postcard) {        
         
         if($postcard->photo && Storage::disk('public')->exists($postcard->photo)) {

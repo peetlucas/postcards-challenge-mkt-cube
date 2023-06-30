@@ -13,6 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('sitemap:generate')->daily()
+        ->between('07:00', '20:00')->hourly();
     }
 
     /**

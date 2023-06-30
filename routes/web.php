@@ -35,12 +35,12 @@ Route::controller(PostcardController::class)->group(function () {
 
     // Manage Postcards
     Route::get('/postcards/manage', [PostcardController::class, 'manage'])->name('postcards.manage')->middleware('auth');
-    
-    // Single Postcard   
-    Route::get('/postcards/{postcard}', 'show')->name('postcards.show');
 
     //410 Error Page 
     Route::get('/errors/410', [PostcardController::class, '410'])->name('errors.410');
+
+    // Single Postcard   
+    Route::get('/postcards/{postcard}', 'show')->name('postcards.show');
 });
 
 Route::middleware([
