@@ -77,7 +77,7 @@ class PostcardController extends Controller
         if($online == "[]"){
             $online = "";
         }
-       
+
         if($online == ""){
             abort_if(!$online, response(Redirect::to('/')
                 ->with('message', '410, Resource is offline!'), 410));
