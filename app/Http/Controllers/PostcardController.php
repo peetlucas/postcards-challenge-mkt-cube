@@ -18,15 +18,18 @@ class PostcardController extends Controller
 {
     /**
      * Display a listing of the resource.
-     */
+     * 
+     */   
     public function index()
     {
         $isDraft = 0;
         return view('postcards.index', [
-            'postcards' => Postcard::latest()->filter(request(['search']))
-                    ->where('is_draft', '=', $isDraft)                   
+         'postcards' => Postcard::latest()->filter(request(['search']))
+                    ->where('is_draft', '=', $isDraft)
+                    ->where((Carbon::parse(date('Y-m-d H:s:i', strtotime('online_at')))
+                    ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0')
                     ->paginate(5)
-        ]);
+        ]);   
     }
 
     /**
@@ -34,15 +37,32 @@ class PostcardController extends Controller
      */
     public function create()
     {
-        //
+        return view('postcards.create');
+    }
+    
+    // Store Postcard Data
+    public function store(Request $request) {
+        $formFields = $request->validate([
+            'title' => 'required',            
+            'price' => 'required',           
+            'is_draft' => 'required'            
+        ]);    
+
+        if($request->hasFile('photo')) {
+            $formFields['photo'] = $request->file('photo')->store('photo', 'public');
+        }
+
+        $formFields['user_id'] = auth()->id();
+        $formFields['team_id'] = auth()->id();
+
+        Postcard::create($formFields);
+
+        return redirect('/postcards/manage')->with('message', 'Postcard created successfully!');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StorePostcardRequest $request)
-    {
-        //
+    // Show Edit Form
+    public function edit(Postcard $postcard) {
+        return view('postcards.edit', ['postcard' => $postcard]);
     }
 
     /**
@@ -50,7 +70,20 @@ class PostcardController extends Controller
      */
     public function show(Postcard $postcard)
     {
-        //Confirm postcard not deleted
+        //Check that resource is online
+        $online = Postcard::where((Carbon::parse(date('Y-m-d H:s:i', strtotime('online_at')))
+                    ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0');        
+      
+        if($online == "[]"){
+            $online = "";
+        }
+       
+        if($online == ""){
+            abort_if(!$online, response(Redirect::to('/')
+                ->with('message', '410, Resource is offline!'), 410));
+        }
+
+        //Confirm postcard deleted
         $deletedPost = Postcard::onlyTrashed()      
                     ->where('id', '=', $postcard->id)
                     ->get();
@@ -64,25 +97,27 @@ class PostcardController extends Controller
 
         //Get postcard schema
         $product = Postcard::findOrFail($postcard->id);
-        $schema = $product->getSchema();   
-
-        return view('postcards.show', compact('postcard', 'schema'));
+        $schema = $product->getSchema();               
+       
+        return view('postcards.show', compact('postcard', 'schema'));         
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Postcard $postcard)
-    {
-        //
-    }
+    // Update Postcard Data
+    public function update(Request $request, Postcard $postcard) {
+               
+        $formFields = $request->validate([
+            'title' => 'required',            
+            'price' => 'required',            
+            'is_draft' => 'required'
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePostcardRequest $request, Postcard $postcard)
-    {
-        //
+        if($request->hasFile('photo')) {
+            $formFields['photo'] = $request->file('photo')->store('photo', 'public');
+        }
+
+        $postcard->update($formFields);
+
+        return back()->with('message', 'Postcard updated successfully!');
     }
 
     /**
@@ -96,4 +131,13 @@ class PostcardController extends Controller
         $postcard->delete();
         return redirect('/postcards/manage')->with('message', 'Postcard deleted successfully');
     }
+
+    // Manage Postcards
+    public function manage() {       
+        return view('postcards.manage', [
+            'postcards' => Postcard::latest()->filter(request(['search']))
+                        ->paginate(5)
+            ]);
+    }    
+
 }
