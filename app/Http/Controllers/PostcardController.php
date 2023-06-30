@@ -6,6 +6,12 @@ use App\Http\Requests\StorePostcardRequest;
 use App\Http\Requests\UpdatePostcardRequest;
 use App\Models\Postcard;
 
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\abort;
+use Illuminate\Support\Facades\Redirect;
+
 class PostcardController extends Controller
 {
     /**
@@ -13,8 +19,14 @@ class PostcardController extends Controller
      */
     public function index()
     {
+        $isDraft = 0;
         return view('postcards.index', [
-            'postcards' => Postcard::paginate(20)
+
+            'postcards' => Postcard::latest()->filter(request(['search']))
+                    ->where('is_draft', '=', $isDraft)
+                    ->where((Carbon::parse(date('Y-m-d H:s:i', strtotime('online_at')))
+                    ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0')
+                    ->paginate(5)
         ]);
     }
 
@@ -39,7 +51,20 @@ class PostcardController extends Controller
      */
     public function show(Postcard $postcard)
     {
-        return view('postcards.show', compact('postcard'));
+        //Check that resource is online
+        $online = Postcard::where((Carbon::parse(date('Y-m-d H:s:i', strtotime('online_at')))
+                    ->diffInSeconds(Carbon::parse(date('Y-m-d H:s:i', strtotime('offline_at'))), false)), '>=', '0');   
+
+        if($online == "[]"){
+            $online = "";
+        }
+
+        if($online == ""){
+            abort_if(!$online, response(Redirect::to('/')
+                ->with('message', '410, Resource is offline!'), 410));
+        }
+
+        return view('postcards.show', compact('postcard', 'schema'));
     }
 
     /**
