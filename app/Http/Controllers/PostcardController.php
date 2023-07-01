@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostcardRequest;
 use App\Http\Requests\UpdatePostcardRequest;
 use App\Models\Postcard;
+use App\Pagination\CustomLengthAwarePaginator;
+
+use Illuminate\Support\Collection;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
