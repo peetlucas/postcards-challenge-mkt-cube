@@ -20,16 +20,10 @@ class Postcard extends Model
         'offline_at',
         'is_draft',
         'user_id',
-        'team_id'
+        'team_id',
+        'photo'
     ];
-
-    public function scopeFilter($query, array $filters) {
-        
-        if($filters['search'] ?? false) {
-            $query->where('title', 'like', '%' . request('search') . '%');
-        }
-    }
-
+    
     //Generate Schema-org structured data
     public function getSchema()
     {
@@ -42,19 +36,7 @@ class Postcard extends Model
             ->photo($this->photo)            
             // Add more properties as needed
             ->toScript();
-    }
-
-    protected $fillable = [
-        'title',            
-        'price',
-        'online_at',
-        'offline_at',
-        'is_draft',
-        'user_id',
-        'team_id',
-        'photo'
-    ];
-
+    } 
     public function scopeFilter($query, array $filters) {
         
         if($filters['search'] ?? false) {
