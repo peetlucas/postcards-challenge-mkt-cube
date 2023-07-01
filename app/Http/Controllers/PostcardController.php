@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostcardRequest;
 use App\Http\Requests\UpdatePostcardRequest;
 use App\Models\Postcard;
+use App\Pagination\CustomLengthAwarePaginator;
+
+use Illuminate\Support\Collection;
 
 class PostcardController extends Controller
 {
@@ -13,8 +16,32 @@ class PostcardController extends Controller
      */
     public function index()
     {
+        // Assuming you have your items and pagination settings
+        $items = Postcard::all();
+        $total = $items->count();
+        $perPage = 10;
+        $currentPage = request()->input('page', 1);
+        $path = '/custom-url'; // Specify your custom URL here
+
+        // Create the custom paginator instance
+        $paginator = new CustomLengthAwarePaginator(
+            new Collection($items),
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => $path,
+            ]
+        );
+
+        // Retrieve the paginated results
+        $paginatedItems = $paginator->items();
+
+        // Render the pagination links
+        $links = $paginator->render();
+
         return view('postcards.index', [
-            'postcards' => Postcard::paginate(20)
+            'postcards' => Postcard::paginate(20), compact('paginatedItems')
         ]);
     }
 
