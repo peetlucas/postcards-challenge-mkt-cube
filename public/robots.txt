@@ -1,2 +1,6 @@
 User-agent: *
-Disallow:
+Disallow: /dashboard
+Disallow: /register
+
+Sitemap: http://localhost/sitemap.xml
+
