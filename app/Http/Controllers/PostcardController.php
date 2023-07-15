@@ -14,6 +14,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\abort;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL;
 
 use Carbon\Carbon;
 
@@ -23,8 +25,8 @@ class PostcardController extends Controller
      * Display a listing of the resource.
      * 
      */   
-    public function index()
-    {
+    public function index(Request $request)
+    {      
         $isDraft = 0;
         return view('postcards.index', [
          'postcards' => Postcard::latest()->filter(request(['search']))

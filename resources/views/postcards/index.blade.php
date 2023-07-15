@@ -3,7 +3,7 @@
   <div class="min-h-full">
     <!-- Page heading -->
     <header class="bg-gray-50 py-8">
-      
+            
       @if(isset($postcards))
         @if($postcards->currentPage() > 1)                        
           <link rel="prev" href="{{ $postcards->previousPageUrl() }}" />             
