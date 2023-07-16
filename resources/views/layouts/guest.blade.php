@@ -19,6 +19,7 @@
         <link rel="canonical" href="{{request()->fullUrl()}}">
          <!-- @livewire('canonical-url-component')
          @stack('head')  -->
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>

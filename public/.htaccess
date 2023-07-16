@@ -4,6 +4,7 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -14,13 +15,18 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Remove UTM parameters from the canonical tag leaving page parameter
-    RewriteCond %{QUERY_STRING} (.*)(utm_source|utm_medium|utm_campaign)(=[^&]+)(&?)(.*)
-    RewriteCond %{QUERY_STRING} !^(.*)(\bpage\b)(=[^&]+)(&?)(.*)
-    RewriteRule ^(.*)(\?.*)?$ /$1?%1%4%5 [L,R=301]
+    # Remove unwanted parameters except for 'page'
+    RewriteCond %{QUERY_STRING} ^(.*&)?(utm_source|utm_medium|utm_campaign)=[^&]+(&.*)?$ [NC]
+    RewriteCond %{QUERY_STRING} !(.*&)?page=[^&]+(&.*)?$ [NC]
+    RewriteRule ^(.*)$ /$1?%1%3 [R=301,L]
 
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+
+
+
+
