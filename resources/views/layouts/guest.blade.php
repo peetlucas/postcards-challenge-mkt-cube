@@ -16,9 +16,10 @@
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
         <link rel="manifest" href="/site.webmanifest">
         <!-- Canonical url -->
-        <!-- <link rel="canonical" href="{{request()->fullUrl()}}"> -->
-         @livewire('canonical-url-component')
-         @stack('head') 
+        <link rel="canonical" href="{{request()->fullUrl()}}">
+         <!-- @livewire('canonical-url-component')
+         @stack('head')  -->
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
